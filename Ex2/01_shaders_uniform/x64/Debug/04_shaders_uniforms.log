@@ -1,0 +1,7 @@
+﻿  gl3w.c
+  gl_utils.cpp
+C:\Users\samuel\Documents\exercícios\Ex2\utils\gl_utils.cpp(7,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  04_shaders_uniforms.cpp
+  Generating Code...
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  04_shaders_uniforms.vcxproj -> C:\Users\samuel\Documents\exercícios\Ex2\x64\Debug\04_shaders_uniforms.exe
