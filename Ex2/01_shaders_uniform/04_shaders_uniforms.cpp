@@ -11,6 +11,7 @@ Adds index buffer (Element Array Buffer)
 #include <cmath>
 
 #include "gl_utils.h" // parser for shader source files
+#include "maths_funcs.h"
 
 static int width = 800, height = 600;
 
@@ -19,6 +20,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void reshape_callback(GLFWwindow* window, int width, int height);
 void showFPS(GLFWwindow* window);
 
+GLfloat moveX = 0.0f;
+GLfloat moveY = 0.0f;
 
 int main()
 {
@@ -146,6 +149,9 @@ int main()
       // Clear the screen
       glClear(GL_COLOR_BUFFER_BIT);
 
+      mat4 transform = zero_mat4(); // make sure to initialize matrix to identity matrix first
+      transform = translate(transform, vec3(0.5f, -0.5f, 0.0f));
+
       // Render the quad (two triangles)
       glUseProgram(shaderProgram);
 
@@ -157,6 +163,9 @@ int main()
       int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
       float redValue=1.0f-greenValue;
       glUniform3f(vertexColorLocation, redValue, greenValue, 0.0f);
+
+      unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+      //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m[0]);
 
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
