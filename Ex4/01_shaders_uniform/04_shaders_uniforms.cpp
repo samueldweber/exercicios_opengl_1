@@ -58,15 +58,13 @@ int main()
 
 
   GLfloat vertices[] = {
-    -0.5f,  0.5f, 0.0f,		// Top left
-    0.5f,  0.5f, 0.0f,		// Top right
+    -0.0f,  0.5f, 0.0f,		// Top left
+    -0.5f,  -0.5f, 0.0f,		// Top right
     0.5f, -0.5f, 0.0f,		// Bottom right
-    -0.5f, -0.5f, 0.0f		// Bottom left
   };
 
   GLuint indices[] = {
     0, 1, 2,  // First Triangle
-    0, 2, 3   // Second Triangle
   };
 
 
@@ -158,7 +156,7 @@ int main()
       //uniforms
       int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
       float redValue=1.0f-greenValue;
-      glUniform4f(vertexColorLocation, redValue, greenValue, 0.0f, 1.0f);
+      glUniform3f(vertexColorLocation, redValue, greenValue, 0.0f);
 
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
