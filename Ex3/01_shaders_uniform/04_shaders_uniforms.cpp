@@ -18,6 +18,16 @@ static int width = 800, height = 600;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void reshape_callback(GLFWwindow* window, int width, int height);
 void showFPS(GLFWwindow* window);
+void handleColor(bool increase);
+void changeColor(bool left);
+float getColor(int cur);
+
+float colors[] = {
+    0.5f, // Red
+    0.5f, // Green
+    0.5f, // Blue
+};
+int color = 0;
 
 
 int main()
@@ -150,13 +160,10 @@ int main()
       glUseProgram(shaderProgram);
 
       // update shader uniform
-      float timeValue = (float) glfwGetTime();
-      float greenValue = sin(timeValue) / 2.0f + 0.5f;
 
       //uniforms
       int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-      float redValue=1.0f-greenValue;
-      glUniform3f(vertexColorLocation, redValue, greenValue, 0.0f);
+      glUniform3f(vertexColorLocation, colors[0], colors[1], colors[2]);
 
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -194,6 +201,55 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+    {
+        handleColor(true);
+    }
+
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+    {
+        handleColor(false);
+    }
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+    {
+        changeColor(true);
+    }
+
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+    {
+        changeColor(false);
+    }
+}
+
+void handleColor(bool increase) {
+    if (increase && colors[color] < 1.0f) {
+        colors[color] +=0.1f;
+    }
+    else if (!increase && colors[color] > 0.0f) {
+        colors[color] -=0.1f;
+    }
+    if (colors[color] > 1.0f) colors[color] = 1.0f;
+    if (colors[color] < 0.0f) colors[color] = 0.0f;
+}
+
+void changeColor(bool left) {
+    if (left) {
+        color--;
+    }
+    else {
+        color++;
+    }
+    if (color < 0) {
+        color = 2;
+    }
+    color = color % 3;
+}
+
+float getColor(int cur) {
+    float c = colors[cur];
+    float ret = c / 255;
+    return ret;
 }
 
 //-----------------------------------------------------------------------------

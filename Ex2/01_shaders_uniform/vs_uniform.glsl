@@ -1,12 +1,14 @@
 #version 410
 
-layout(location = 0) in vec3 vertex_position;
+layout(location = 0) in vec3 vPos;
 layout(location = 1) in vec3 vertex_colour;
 
+uniform float offX;
+uniform float offY;
 out vec3 colour;
-uniform mat4 transform;
 
 void main() {
 	colour = vertex_colour;
-	gl_Position = transform * vec4(vertex_position, 1.0);
+	
+	gl_Position = vec4(vPos.x + offX, vPos.y + offY, vPos.z, 1.0);
 }

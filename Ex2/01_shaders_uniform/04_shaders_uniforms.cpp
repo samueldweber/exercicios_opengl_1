@@ -11,7 +11,6 @@ Adds index buffer (Element Array Buffer)
 #include <cmath>
 
 #include "gl_utils.h" // parser for shader source files
-#include "maths_funcs.h"
 
 static int width = 800, height = 600;
 
@@ -20,8 +19,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void reshape_callback(GLFWwindow* window, int width, int height);
 void showFPS(GLFWwindow* window);
 
-GLfloat moveX = 0.0f;
-GLfloat moveY = 0.0f;
+GLfloat offX = 0.0f;
+GLfloat offY = 0.0f;
 
 int main()
 {
@@ -75,7 +74,8 @@ int main()
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+  
 
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -149,9 +149,6 @@ int main()
       // Clear the screen
       glClear(GL_COLOR_BUFFER_BIT);
 
-      mat4 transform = zero_mat4(); // make sure to initialize matrix to identity matrix first
-      transform = translate(transform, vec3(0.5f, -0.5f, 0.0f));
-
       // Render the quad (two triangles)
       glUseProgram(shaderProgram);
 
@@ -164,8 +161,13 @@ int main()
       float redValue=1.0f-greenValue;
       glUniform3f(vertexColorLocation, redValue, greenValue, 0.0f);
 
-      unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-      //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m[0]);
+      int posx = glGetUniformLocation(shaderProgram, "offX");
+      glUniform1f(posx, offX);
+
+      int posy = glGetUniformLocation(shaderProgram, "offY");
+      glUniform1f(posy, offY);
+      
+
 
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -203,6 +205,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+    {
+        if (offY < 0.49f) offY += 0.1f;
+    }
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+    {
+        if (offY > -0.49f) offY -= 0.1f;
+    }
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+    {
+        if (offX < 0.49f)offX += 0.1f;
+    }
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+    {
+        if (offX > -0.49f) offX -= 0.1f;
+    }
 }
 
 //-----------------------------------------------------------------------------
