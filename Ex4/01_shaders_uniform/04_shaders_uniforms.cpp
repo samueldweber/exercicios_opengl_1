@@ -14,6 +14,8 @@ Adds index buffer (Element Array Buffer)
 
 static int width = 800, height = 600;
 
+bool swap = false;
+
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void reshape_callback(GLFWwindow* window, int width, int height);
@@ -86,8 +88,10 @@ int main()
 
   char vertex_shader[1024 * 256];
   char fragment_shader[1024 * 256];
+  char fragment_shader2[1024 * 256];
   parse_file_into_str( "vs_uniform.glsl", vertex_shader, 1024 * 256 );
   parse_file_into_str( "fs_uniform.glsl", fragment_shader, 1024 * 256 );
+  parse_file_into_str("fs_uniform2.glsl", fragment_shader2, 1024 * 256);
 
 
   GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -118,6 +122,19 @@ int main()
       std::cout << "Error! Fragment shader failed to compile. " << infoLog << std::endl;
     }
 
+  GLint fs2 = glCreateShader(GL_FRAGMENT_SHADER);
+  p = (const GLchar*)fragment_shader2;
+  glShaderSource(fs2, 1, &p, NULL);
+  glCompileShader(fs2);
+
+
+  glGetShaderiv(fs2, GL_COMPILE_STATUS, &result);
+  if (!result)
+  {
+      glGetShaderInfoLog(fs2, sizeof(infoLog), NULL, infoLog);
+      std::cout << "Error! Fragment shader failed to compile. " << infoLog << std::endl;
+  }
+
 
   GLint shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vs);
@@ -131,8 +148,21 @@ int main()
       std::cout << "Error! Shader program linker failure. " << infoLog  << std::endl;
     }
 
+  GLint shaderProgram2 = glCreateProgram();
+  glAttachShader(shaderProgram2, vs);
+  glAttachShader(shaderProgram2, fs2);
+  glLinkProgram(shaderProgram2);
+
+  glGetProgramiv(shaderProgram2, GL_LINK_STATUS, &result);
+  if (!result)
+  {
+      glGetProgramInfoLog(shaderProgram2, sizeof(infoLog), NULL, infoLog);
+      std::cout << "Error! Shader program linker failure. " << infoLog << std::endl;
+  }
+
   glDeleteShader(vs);
   glDeleteShader(fs);
+  glDeleteShader(fs2);
 
 
   // Rendering loop
@@ -146,15 +176,17 @@ int main()
       // Clear the screen
       glClear(GL_COLOR_BUFFER_BIT);
 
+      GLint progToUse = swap ? shaderProgram2 : shaderProgram;
+
       // Render the quad (two triangles)
-      glUseProgram(shaderProgram);
+      glUseProgram(progToUse);
 
       // update shader uniform
       float timeValue = (float) glfwGetTime();
       float greenValue = sin(timeValue) / 2.0f + 0.5f;
 
       //uniforms
-      int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+      int vertexColorLocation = glGetUniformLocation(progToUse, "ourColor");
       float redValue=1.0f-greenValue;
       glUniform3f(vertexColorLocation, redValue, greenValue, 0.0f);
 
@@ -194,6 +226,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        swap = !swap;
+    }
 }
 
 //-----------------------------------------------------------------------------
